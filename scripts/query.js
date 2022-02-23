@@ -1,9 +1,10 @@
 'use strict'
 
-const {BigQuery} = require('@google-cloud/bigquery');
+const {BigQuery} = require('@google-cloud/bigquery')
 const fs = require('fs')
 const param = require('commander')
 const { flatten, flow, map, first, isNumber, defaultTo } = require('lodash/fp')
+const json2csv = require('json2csv')
 
 const query = (sql) => {
     const options = {
@@ -12,9 +13,9 @@ const query = (sql) => {
         useLegacySql: true
     }
 
-    const bigqueryClient = new BigQuery();
+    const bigqueryClient = new BigQuery()
 
-    return bigqueryClient.query(options);
+    return bigqueryClient.query(options)
     // return BigQuery({ projectId: process.env.GCLOUD_PROJECT }).query(options)
 }
 
@@ -36,6 +37,10 @@ const writeJsonToFile = q => async (j) => {
         if (err) throw new Error('could not append file')
         json.push(j)
         fs.writeFile(fN, JSON.stringify(flatten(json), null, 2), (err) => {
+            if (err) throw err
+        })
+        const csv = json2csv({ data: json, fields: ['name', 'year', 'quarter', 'count'] })
+        fs.writeFile(fN+'.csv', csv, (err) => {
             if (err) throw err
         })
     })
