@@ -4,7 +4,7 @@ const {BigQuery} = require('@google-cloud/bigquery')
 const fs = require('fs')
 const param = require('commander')
 const { flatten, flow, map, first, isNumber, defaultTo } = require('lodash/fp')
-const json2csv = require('json2csv')
+const { Parser } = require('json2csv')
 
 const query = (sql) => {
     const options = {
@@ -39,7 +39,8 @@ const writeJsonToFile = q => async (j) => {
         fs.writeFile(fN, JSON.stringify(flatten(json), null, 2), (err) => {
             if (err) throw err
         })
-        const csv = json2csv({ data: json, fields: ['name', 'year', 'quarter', 'count'] })
+        const json2csvParser = new Parser(['name', 'year', 'quarter', 'count'])
+        const csv = json2csvParser(data)
         fs.writeFile(fN+'.csv', csv, (err) => {
             if (err) throw err
         })
