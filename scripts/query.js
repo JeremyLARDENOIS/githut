@@ -41,7 +41,7 @@ const writeJsonToFile = q => async (j) => {
         })
         const json2csvParser = new Parser(['name', 'year', 'quarter', 'count'])
         const csv = json2csvParser(data)
-        fs.writeFile(fN+'.csv', csv, (err) => {
+        fs.writeFile(fN.substring(0, fN.length - 5) +'.csv', csv, (err) => {
             if (err) throw err
         })
     })
