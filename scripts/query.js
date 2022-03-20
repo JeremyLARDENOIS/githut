@@ -5,6 +5,7 @@ const fs = require('fs')
 const param = require('commander')
 const { flatten, flow, map, first, isNumber, defaultTo } = require('lodash/fp')
 const { Parser } = require('json2csv')
+const Admzip = require('adm-zip')
 
 const query = (sql) => {
     const options = {
@@ -30,6 +31,9 @@ const getAppendFileName = eventName => {
 
 const format = str => str.split(' ').pop().replace(/'/g, '')
 
+const zipJson = new Admzip()
+const zipCsv = new Admzip()
+
 const writeJsonToFile = q => async (j) => {
     const fN = '../src/data/' + getAppendFileName(format(q))
     fs.readFile(fN, (err, data) => {
@@ -41,9 +45,15 @@ const writeJsonToFile = q => async (j) => {
         })
         const json2csvParser = new Parser(['name', 'year', 'quarter', 'count'])
         const csv = json2csvParser(data)
-        fs.writeFile(fN.substring(0, fN.length - 5) +'.csv', csv, (err) => {
+        const csvName = fN.substring(0, fN.length - 5) +'.csv'
+        fs.writeFile(csvName, csv, (err) => {
             if (err) throw err
-        })
+        })  // Add to zip
+        zipJson.addFile('../src/data/' + fN, fN)
+        zipCsv.addFile('../src/data/' + csvName, csvName)
+        // Create zip
+        zipJson.writeZip('../src/data/' + 'data-json.zip')
+        zipCsv.writeZip('../src/data/'+ 'data-csv.zip')
     })
 }
 
