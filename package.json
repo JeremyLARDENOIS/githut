@@ -22,6 +22,7 @@
     "dev": "react-scripts start"
   },
   "dependencies": {
+    "adm-zip": "^0.5.9",
     "bootstrap": "^5.0.1",
     "github-colors": "^2.2.18",
     "highcharts": "^9.1.0",
